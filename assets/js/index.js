@@ -53,6 +53,31 @@ window.addEventListener("scroll", function () {
 const htmlElement = document.documentElement;
 const themeButton = document.getElementById("theme-toggle-button");
 
-function changeThemeButton() {
-  htmlElement.classList.contains("dark");
+// Local Storage for the current theme
+function localStorageTheme() {
+  const currentTheme = localStorage.getItem("theme");
+  if (currentTheme === "dark") {
+    htmlElement.classList.add("dark");
+  } else {
+    htmlElement.classList.remove("dark");
+  }
 }
+localStorageTheme();
+
+// Change Theme when I click on the theme button
+function toggleTheme() {
+  htmlElement.classList.toggle("dark");
+
+  // themeButton.setAttribute(
+  //   "aria-pressed",
+  //   htmlElement.classList.contains("dark"),
+  // );
+
+  if (htmlElement.classList.contains("dark")) {
+    localStorage.setItem("theme", "dark");
+  } else {
+    localStorage.setItem("theme", "light");
+  }
+}
+
+themeButton.addEventListener("click", toggleTheme);
