@@ -68,12 +68,11 @@ localStorageTheme();
 function toggleTheme() {
   htmlElement.classList.toggle("dark");
 
-  // themeButton.setAttribute(
-  //   "aria-pressed",
-  //   htmlElement.classList.contains("dark"),
-  // );
+  let darkMode = htmlElement.classList.contains("dark");
 
-  if (htmlElement.classList.contains("dark")) {
+  // themeButton.setAttribute("aria-pressed", darkMode);
+
+  if (darkMode) {
     localStorage.setItem("theme", "dark");
   } else {
     localStorage.setItem("theme", "light");
@@ -81,3 +80,165 @@ function toggleTheme() {
 }
 
 themeButton.addEventListener("click", toggleTheme);
+
+// Navs and tabs for Portfolio section
+const portfolioFilters = document.querySelectorAll(".portfolio-filter");
+const portfolioItems = document.querySelectorAll(".portfolio-item");
+
+// Add active style to the selected filter
+function addActiveFilter(button) {
+  button.classList.add(
+    "active",
+    "bg-linear-to-r",
+    "from-primary",
+    "to-secondary",
+    "text-white",
+    "shadow-lg",
+    "shadow-primary/50",
+  );
+  button.classList.remove(
+    "bg-white",
+    "dark:bg-slate-800",
+    "text-slate-600",
+    "dark:text-slate-300",
+    "border",
+    "border-slate-300",
+    "dark:border-slate-700",
+  );
+}
+// Remove active style from one filter
+function removeActiveFilter() {
+  for (let i = 0; i < portfolioFilters.length; i++) {
+    portfolioFilters[i].classList.remove(
+      "active",
+      "bg-linear-to-r",
+      "from-primary",
+      "to-secondary",
+      "text-white",
+      "shadow-lg",
+      "shadow-primary/50",
+    );
+    portfolioFilters[i].classList.add(
+      "bg-white",
+      "dark:bg-slate-800",
+      "text-slate-600",
+      "dark:text-slate-300",
+      "border",
+      "border-slate-300",
+      "dark:border-slate-700",
+    );
+  }
+}
+
+// function filterPortfolioItems(category) {
+//   for (let i = 0; i < portfolioItems.length; i++) {
+//     let itemCategory = portfolioItems[i].getAttribute("data-category");
+
+//     if (category === "all" || category === itemCategory) {
+//       portfolioItems[i].style.display = "block";
+//     } else {
+//       portfolioItems[i].style.display = "none";
+//     }
+//   }
+// }
+function filterPortfolioItems(category) {
+  for (let i = 0; i < portfolioItems.length; i++) {
+    let item = portfolioItems[i];
+    let itemCategory = item.getAttribute("data-category");
+
+    if (category === "all" || category === itemCategory) {
+      item.style.display = "block";
+
+      setTimeout(function () {
+        item.style.opacity = "1";
+        item.style.transform = "scale(1)";
+      }, 150);
+    } else {
+      item.style.opacity = "0";
+      item.style.transform = "scale(0.8)";
+
+      setTimeout(function () {
+        item.style.display = "none";
+      }, 200);
+    }
+  }
+}
+
+for (let i = 0; i < portfolioFilters.length; i++) {
+  portfolioFilters[i].addEventListener("click", function () {
+    let targetCategory = this.getAttribute("data-filter");
+
+    removeActiveFilter();
+    addActiveFilter(this);
+    filterPortfolioItems(targetCategory);
+  });
+}
+
+// Action of Carousel / Slider in Testimonials section
+const testimonialsCarousel = document.getElementById("testimonials-carousel");
+const testimonialCards = document.querySelectorAll(".testimonial-card");
+const prevButton = document.getElementById("prev-testimonial");
+const nextButton = document.getElementById("next-testimonial");
+const carouselIndicators = document.querySelectorAll(".carousel-indicator");
+
+let currentSlide = 0;
+
+function getCardsView() {
+  if (window.innerWidth >= 1024) {
+    return 3; // Desktop
+  } else if (window.innerWidth >= 640) {
+    return 2; // Tablet
+  } else {
+    return 1; // Mobile
+  }
+}
+
+function updateCarousel() {
+  let cardsView = getCardsView();
+
+  let cardWidth = 100 / cardsView;
+
+  let translateValue = currentSlide * cardWidth;
+
+  testimonialsCarousel.style.transform = `translateX(+${translateValue}%)`;
+}
+
+function getMaxSlide() {
+  return testimonialCards.length - getCardsView();
+}
+
+function nextSlide() {
+  currentSlide++;
+
+  if (currentSlide > getMaxSlide()) {
+    currentSlide = 0;
+  }
+
+  updateCarousel();
+}
+
+function previousSlide() {
+  currentSlide--;
+
+  if (currentSlide < 0) {
+    currentSlide = getMaxSlide();
+  }
+
+  updateCarousel();
+}
+
+nextButton.addEventListener("click", nextSlide);
+
+prevButton.addEventListener("click", previousSlide);
+
+function updateIndicators() {
+  for (let i = 0; i < indicators.length; i++) {
+    indicators[i].classList.remove("bg-primary", "scale-125");
+
+    indicators[i].classList.add("bg-slate-300", "dark:bg-slate-600");
+  }
+}
+
+window.addEventListener("resize", function () {
+  updateCarousel();
+});
