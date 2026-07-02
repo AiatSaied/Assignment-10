@@ -201,44 +201,90 @@ function updateCarousel() {
   let translateValue = currentSlide * cardWidth;
 
   testimonialsCarousel.style.transform = `translateX(+${translateValue}%)`;
-}
 
-function getMaxSlide() {
-  return testimonialCards.length - getCardsView();
+  updateIndicators();
 }
 
 function nextSlide() {
+  let maxIndex = testimonialCards.length - getCardsView();
   currentSlide++;
-
-  if (currentSlide > getMaxSlide()) {
+  if (currentSlide > maxIndex) {
     currentSlide = 0;
   }
-
   updateCarousel();
 }
 
 function previousSlide() {
+  let maxIndex = testimonialCards.length - getCardsView();
   currentSlide--;
-
   if (currentSlide < 0) {
-    currentSlide = getMaxSlide();
+    currentSlide = maxIndex;
   }
-
   updateCarousel();
 }
 
 nextButton.addEventListener("click", nextSlide);
-
 prevButton.addEventListener("click", previousSlide);
 
-function updateIndicators() {
-  for (let i = 0; i < indicators.length; i++) {
-    indicators[i].classList.remove("bg-primary", "scale-125");
+// function updateIndicators() {
+//   for (let i = 0; i < carouselIndicators.length; i++) {
+//     carouselIndicators[i].classList.remove("active", "bg-accent", "scale-125");
+//     carouselIndicators[i].classList.add("bg-slate-400", "dark:bg-slate-600");
+//   }
 
-    indicators[i].classList.add("bg-slate-300", "dark:bg-slate-600");
+//   if (carouselIndicators[currentSlide] !== undefined) {
+//     carouselIndicators[currentSlide].classList.remove(
+//       "bg-slate-400",
+//       "dark:bg-slate-600",
+//     );
+
+//     carouselIndicators[currentSlide].classList.add(
+//       "active",
+//       "bg-accent",
+//       "scale-125",
+//     );
+//   }
+// }
+function updateIndicators() {
+  for (let i = 0; i < carouselIndicators.length; i++) {
+    carouselIndicators[i].classList.remove("active", "bg-accent", "scale-125");
+
+    carouselIndicators[i].classList.add("bg-slate-400", "dark:bg-slate-600");
   }
+
+  let indicatorIndex = currentSlide;
+
+  if (indicatorIndex >= carouselIndicators.length) {
+    indicatorIndex = carouselIndicators.length - 1;
+  }
+
+  carouselIndicators[indicatorIndex].classList.remove(
+    "bg-slate-400",
+    "dark:bg-slate-600",
+  );
+
+  carouselIndicators[indicatorIndex].classList.add(
+    "active",
+    "bg-accent",
+    "scale-125",
+  );
+}
+
+for (let i = 0; i < carouselIndicators.length; i++) {
+  carouselIndicators[i].addEventListener("click", function () {
+    currentSlide = Number(this.getAttribute("data-index"));
+
+    updateCarousel();
+  });
 }
 
 window.addEventListener("resize", function () {
+  let maxIndex = testimonialCards.length - getCardsView();
+  if (currentSlide > maxIndex) {
+    currentSlide = maxIndex;
+  }
   updateCarousel();
 });
+
+// Initialize Slider
+updateCarousel();
