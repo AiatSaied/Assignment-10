@@ -226,25 +226,6 @@ function previousSlide() {
 nextButton.addEventListener("click", nextSlide);
 prevButton.addEventListener("click", previousSlide);
 
-// function updateIndicators() {
-//   for (let i = 0; i < carouselIndicators.length; i++) {
-//     carouselIndicators[i].classList.remove("active", "bg-accent", "scale-125");
-//     carouselIndicators[i].classList.add("bg-slate-400", "dark:bg-slate-600");
-//   }
-
-//   if (carouselIndicators[currentSlide] !== undefined) {
-//     carouselIndicators[currentSlide].classList.remove(
-//       "bg-slate-400",
-//       "dark:bg-slate-600",
-//     );
-
-//     carouselIndicators[currentSlide].classList.add(
-//       "active",
-//       "bg-accent",
-//       "scale-125",
-//     );
-//   }
-// }
 function updateIndicators() {
   for (let i = 0; i < carouselIndicators.length; i++) {
     carouselIndicators[i].classList.remove("active", "bg-accent", "scale-125");
@@ -288,3 +269,221 @@ window.addEventListener("resize", function () {
 
 // Initialize Slider
 updateCarousel();
+
+// Actions on Settings - sidebar (Gear Icon)
+const settingsToggle = document.getElementById("settings-toggle");
+const settingsSidebar = document.getElementById("settings-sidebar");
+const closeSettings = document.getElementById("close-settings");
+
+// Click Gear --> Sidebar opens / closes
+settingsToggle.addEventListener("click", function () {
+  settingsSidebar.classList.toggle("translate-x-full");
+
+  let isClosed = settingsSidebar.classList.contains("translate-x-full");
+
+  settingsToggle.setAttribute("aria-expanded", !isClosed);
+  settingsSidebar.setAttribute("aria-hidden", isClosed);
+});
+
+// Click X --> Sidebar closes
+closeSettings.addEventListener("click", function () {
+  settingsToggle.setAttribute("aria-expanded", "false");
+  settingsSidebar.setAttribute("aria-hidden", "true");
+  settingsSidebar.classList.add("translate-x-full");
+});
+
+//Change fontName for the body
+const fontOptions = document.querySelectorAll(".font-option");
+const bodyElement = document.body;
+
+function applyFont(fontName) {
+  bodyElement.classList.remove("font-tajawal", "font-cairo", "font-alexandria");
+  bodyElement.classList.add("font-" + fontName);
+
+  localStorage.setItem("selectedFont", fontName);
+
+  for (let i = 0; i < fontOptions.length; i++) {
+    let currentFont = fontOptions[i];
+
+    if (currentFont.getAttribute("data-font") === fontName) {
+      currentFont.classList.add(
+        "active",
+        "border-primary",
+        "bg-slate-50",
+        "dark:bg-slate-800",
+      );
+    } else {
+      currentFont.classList.remove(
+        "active",
+        "border-primary",
+        "bg-slate-50",
+        "dark:bg-slate-800",
+      );
+    }
+  }
+}
+
+function localStorageFont() {
+  let savedFont = localStorage.getItem("selectedFont");
+
+  if (savedFont) {
+    applyFont(savedFont);
+  }
+}
+
+for (let i = 0; i < fontOptions.length; i++) {
+  fontOptions[i].addEventListener("click", function () {
+    let selectedFont = this.getAttribute("data-font");
+    applyFont(selectedFont);
+  });
+}
+
+localStorageFont();
+
+// Change Color for the body
+const themeColors = document.getElementById("theme-colors-grid");
+
+const colors = [
+  {
+    name: "Purple Blue",
+    primary: "#6366f1",
+    secondary: "#8b5cf6",
+    accent: "#a855f7",
+  },
+  {
+    name: "Pink Orange",
+    primary: "#ec4899",
+    secondary: "#f97316",
+    accent: "#fb923c",
+  },
+  {
+    name: "Green Emerald",
+    primary: "#10b981",
+    secondary: "#059669",
+    accent: "#34d399",
+  },
+  {
+    name: "Blue Cyan",
+    primary: "#3b82f6",
+    secondary: "#06b6d4",
+    accent: "#22d3ee",
+  },
+  {
+    name: "Red Rose",
+    primary: "#ef4444",
+    secondary: "#f43f5e",
+    accent: "#fb7185",
+  },
+  {
+    name: "Amber Orange",
+    primary: "#f59e0b",
+    secondary: "#d97706",
+    accent: "#fbbf24",
+  },
+];
+
+function applyThemeColors(index, primary, secondary, accent) {
+  // change in root
+  document.documentElement.style.setProperty("--color-primary", primary);
+  document.documentElement.style.setProperty("--color-secondary", secondary);
+  document.documentElement.style.setProperty("--color-accent", accent);
+
+  // localStorage.setItem("primaryColor", primary);
+  // localStorage.setItem("secondaryColor", secondary);
+  // localStorage.setItem("accentColor", accent);
+  localStorage.setItem("themeIndex", index);
+
+  updateActiveTheme(index);
+}
+
+function updateActiveTheme(index) {
+  let colorButtons = themeColors.children;
+
+  for (let i = 0; i < colorButtons.length; i++) {
+    colorButtons[i].classList.remove(
+      "ring-2",
+      "ring-primary",
+      "ring-offset-2",
+      "ring-offset-white",
+      "dark:ring-offset-slate-900",
+    );
+  }
+
+  colorButtons[index].classList.add(
+    "ring-2",
+    "ring-primary",
+    "ring-offset-2",
+    "ring-offset-white",
+    "dark:ring-offset-slate-900",
+  );
+}
+
+function createThemeButtons() {
+  for (let i = 0; i < colors.length; i++) {
+    let currentColor = colors[i];
+    let colorButton = document.createElement("button");
+
+    colorButton.className =
+      "w-12 h-12 rounded-full cursor-pointer transition-transform hover:scale-110 border-2 border-slate-200 dark:border-slate-700 hover:border-primary shadow-sm";
+
+    colorButton.style.background = `linear-gradient(135deg, ${currentColor.primary}, ${currentColor.secondary})`;
+    colorButton.setAttribute("aria-label", currentColor.name);
+
+    colorButton.addEventListener("click", function () {
+      applyThemeColors(
+        i,
+        currentColor.primary,
+        currentColor.secondary,
+        currentColor.accent,
+      );
+    });
+
+    themeColors.appendChild(colorButton);
+  }
+}
+
+function localStorageColor() {
+  let savedTheme = localStorage.getItem("themeIndex");
+
+  if (savedTheme !== null) {
+    applyThemeColors(
+      Number(savedTheme),
+      colors[savedTheme].primary,
+      colors[savedTheme].secondary,
+      colors[savedTheme].accent,
+    );
+  }
+}
+
+// Reset any change in Font / Color
+const resetSettings = document.getElementById("reset-settings");
+
+resetSettings.addEventListener("click", function () {
+  localStorage.removeItem("themeIndex");
+  // Reset Font
+  applyFont("tajawal");
+  // Reset Colors
+  applyThemeColors(0, colors[0].primary, colors[0].secondary, colors[0].accent);
+});
+
+// Initialize
+createThemeButtons();
+localStorageColor();
+
+// Action of Scroll To Top Button
+const scrollTopButton = document.getElementById("scroll-to-top");
+
+window.addEventListener("scroll", function () {
+  if (window.scrollY >= 300) {
+    scrollTopButton.classList.remove("opacity-0", "invisible");
+  } else {
+    scrollTopButton.classList.add("opacity-0", "invisible");
+  }
+});
+
+scrollTopButton.addEventListener("click", function () {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+});
