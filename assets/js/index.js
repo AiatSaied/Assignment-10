@@ -70,7 +70,7 @@ function toggleTheme() {
 
   let darkMode = htmlElement.classList.contains("dark");
 
-  // themeButton.setAttribute("aria-pressed", darkMode);
+  themeButton.setAttribute("aria-pressed", darkMode);
 
   if (darkMode) {
     localStorage.setItem("theme", "dark");
