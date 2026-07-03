@@ -466,7 +466,7 @@ resetSettings.addEventListener("click", function () {
   applyThemeColors(0, colors[0].primary, colors[0].secondary, colors[0].accent);
 });
 
-// Initialize
+// Initialize Colors
 createThemeButtons();
 localStorageColor();
 
